@@ -1,0 +1,16 @@
+{
+    "actions":[
+        "Incluir",
+        "Excluir",
+        "Cambiar num_control"
+    ],
+    "trading_systems":[
+        "BRC: Sistema BRC",
+        "BRG: Sistema BRG",
+        "DCV: Sistema DCV",
+        "DVL: Registro Deceval",
+        "MEC: Sistema MEC",
+        "SEN: Sistema SEN",
+        "SPV: Sisval"
+    ]
+}

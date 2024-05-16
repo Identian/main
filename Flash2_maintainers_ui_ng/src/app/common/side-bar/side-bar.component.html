@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a [routerLink]="['']"><h1>MANTENEDORES PRECIA</h1></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item p-2">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="operationsBtSidebar" data-bs-toggle="dropdown" aria-expanded="false">
+              Operaciones
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="operationsBtSidebar">
+              <li><a class="dropdown-item" [routerLink]="['operations/include-exclude-operations']">Incluir/Excluir operaciones</a></li>
+              <div class="dropdown-divider"></div>
+              <li><a class="dropdown-item" [routerLink]="['requests/include-exclude-operations']">Aprobar Incluir/Excluir opreaciones</a></li>
+            </ul>
+        </div>
+        </li>
+        <li class="nav-item p-2">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="operationsBtSidebar" data-bs-toggle="dropdown" aria-expanded="false">
+              Params
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="operationsBtSidebar">
+              <li><a class="dropdown-item" [routerLink]="['params/general']">Parametros generales</a></li>
+              <li><a class="dropdown-item" [routerLink]="['params/betas']">Parametros de betas</a></li>
+              <div class="dropdown-divider"></div>
+              <li><a class="dropdown-item" [routerLink]="['requests/general-params']">Aprobar Parametros generales</a></li>
+              <li><a class="dropdown-item" [routerLink]="['requests/betas-params']">Aprobar Parametros de betas</a></li>
+            </ul>
+            
+          </div>
+      </ul>
+    </div>
+  </div>
+</nav>

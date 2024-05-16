@@ -1,0 +1,151 @@
+{
+    "nombres_por_ambiente":[
+        "*",
+        "dev",
+        "qa",
+        "p"
+    ],
+    "componentes":{
+        "secretos":[
+            {
+                "identificador_secreto":"precia/maintainer",
+                "lista_de_claves":{
+                    "conn_string_maintainer":"String de conexion hacia la base de datos del mantenedor.",
+                    "host":"Direccion de conexion a la base de datos del mantenedor.",
+                    "port":"Puerto de conexion a la base de datos del mantenedor.",
+                    "username":"Usuario para laconexion a la base de datos del mantenedor.",
+                    "password":"Contraseña para la conexion a la base de datos del mantenedor.",
+                    "engine":"Motor de conexion base de datos del mantenedor.",
+                    "bdname":"maintainer"
+                }
+            },{
+                "identificador_secreto":"rfl/maintainer/bdflash2",
+                "lista_de_claves":{
+                    "username":"Usuario para la conexion a la base de datos de flash con credenciales del mantenedor.",
+                    "password":"Contraseña para la conexion a la base de datos de flash con credenciales del mantenedor.",
+                    "engine":"Motor de conexion base de datos de flash",
+                    "host":"Direccion de conexion a la base de datos de de flash.",
+                    "port":"Puerto de conexion a la base de datos de flash.",
+                    "bdIntanceIdentifier":"Identificador de instancia de base de datos (generado).",
+                    "conn_string_maintainer_rfl":"String de conexion hacia la base de datos de flash con credenciales del mantenedor."
+                }
+            },
+            {
+                "identificador_secreto":"/rfl/files-generator/smtp2",
+                "lista_de_claves":{
+                    "server":"Direccion de conexion para el servicio de mensajeria SMTP.",
+                    "port":"Puerto de conexion para el servicio de mensajeria SMTP.",
+                    "user":"Usuario para la conexion para el servicio de mensajeria SMTP.",
+                    "password":"Contraseña para la conexion para el servicio de mensajeria SMTP."
+                }
+            },
+            {
+                "identificador_secreto":"rfl/maintainer/authorization",
+                "lista_de_claves":{
+                    "ms_tenant":"Llave de acceso a la aplicacion con active directory.",
+                    "client_id":"Id del cliente en Azure para el acceso al Active Directory.",
+                    "header_value":"Valor de comparacion para el header entrante por medio del identificador x-precia-x que viene desde cloudfront. Debe ser igual a el definido en Cloudfront."
+                }
+            }
+        ],
+        "s3":[
+            {
+                "nombre_bucket":"s3-*-maintainer-page",
+                "descripción_bucket":"s3 para almacenar la pagina web",
+                "policy":{
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "1",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity <codigo_de_identidad_cloudfront>"
+                            },
+                            "Action": "s3:GetObject",
+                            "Resource": "arn:aws:s3:::s3-dev-maintainer-page/*"
+                        }
+                    ]
+                },
+                "access":"private"
+            },
+            {
+                "nombre_bucket":"s3-*-maintainer",
+                "descripción_bucket":"s3 para alojar el glue y sus librerias"
+            }
+        ],
+        "lambdas":[
+            {
+                "nombre_lambda":"lbd-*-maintainer-get-fields",
+                "descripción_lambda":"Lambda que trae los datos del formulario",
+                "variables_de_entorno":{
+                    "MAINTAINER_CONNECTION":"precia/maintainer (secreto)"
+            },
+                "rol_lambda":"lambda-vpc-rol",
+                "capa_lambda":"capa-mysql-connector-python"
+            },
+            {
+                "nombre_lambda":"lbd-*-maintainer-validate-query",
+                "descripción_lambda":"Lambda que valida el query",
+                "variables_de_entorno":{
+                    "FLASH_CONNECTION":"rfl/maintainer/bdflash2 (secreto)"
+                },
+                "rol_lambda":"lambda-vpc-rol",
+                "capa_lambda":"capa-mysql-connector-python"
+            },
+            {
+                "nombre_lambda":"lbd-*-maintainer-insert-request",
+                "descripción_lambda":"Lambda que inserta una solicitud",
+                "variables_de_entorno":{
+                    "SMTP_CREDENTIALS":"/rfl/files-generator/smtp2 (secreto)",
+                    "MAINTAINER_EMAIL":"maintainer@precia.co",
+                    "MAINTAINER_CONNECTION":"precia/maintainer (secreto)",
+                    "APPROVE_URL":"https://9e6aq42ec5.execute-api.us-east-1.amazonaws.com/dev_20230403/request/processor"
+                },
+                "rol_lambda":"lambda-vpc-rol",
+                "capa_lambda":"capa-mysql-connector-python"
+            },
+            {
+                "nombre_lambda":"lbd-*-maintainer-process-request",
+                "descripción_lambda":"Lambda que inicializa el procesamiento de una solicitud",
+                "variables_de_entorno":{
+                    "JOB_NAME":"glue-*-maintainer-process-request"
+                },
+                "rol_lambda":"lambda-vpc-glue-rol",
+                "capa_lambda":""
+            },
+            {
+                "nombre_lambda":"lbd-*-maintainer-token-checking",
+                "descripción_lambda":"Lambda que autoriza.",
+                "variables_de_entorno":{
+                    "SECRET_AUTENTICATION_INFO":"rfl/maintainer/authorization (secreto)"
+            },
+                "rol_lambda":"lambda-vpc-rol",
+                "capa_lambda":"capa-requests-cryptography-pyjwt"
+            }
+        ],
+        "glues":[
+            {
+                "nombre_glue":"glue-*-maintainer-process-request",
+                "descripción_glue":"Glue que procesa una solicitud",
+                "variables_de_entorno":{
+                    "--FLASH2_CONFIGURATION":"rfl/maintainer/bdflash2 (secreto)",
+                    "--MAINTAINER_CREDENTIALS":"precia/maintainer (secreto)",
+                    "--MAINTAINER_MAIL":"maintainer@precia.co",
+                    "--RESQUEST_TIMEOUT":"20",
+                    "--SMTP_CREDENTIALS":"/rfl/files-generator/smtp2 (secreto)"
+                },
+                "librerias":[
+                    {
+                        "nombre_libreria":"email_utils-0.1-py3-none-any.whl",
+                        "bucket_libreria":"s3://s3-dev-maintainer/"
+                    },
+                    {
+                        "nombre_libreria":"precia_utils-0.1-py3-none-any.whl",
+                        "bucket_libreria":"s3://s3-dev-maintainer/"
+                    }
+                ],
+                "bucket_glue":"s3://s3-*-maintainer/"
+            }
+        ]
+    }
+}

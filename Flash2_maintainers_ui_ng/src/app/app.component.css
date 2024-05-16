@@ -1,0 +1,4 @@
+#side-bar-div, #router-outlet-div{
+    display: block;
+    height: 100%;
+}

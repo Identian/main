@@ -1,0 +1,70 @@
+<div class="container-fluid col-10 justify-content-center" id="request-builder-content">
+  <h1 class="m-4 d-flex justify-content-center align-items-center">MANTENEDOR PRECIA</h1>
+  <form class="text-center" [formGroup]="requestForm">
+    <div class="form-group row d-flex justify-content-center">
+      <div class="m-2">
+        <label for="queryValidateInput">Consulta</label>
+        <textarea id="queryValidateInput" class="form-control" rows="8" maxlength="32768" formControlName="query"
+          [ngClass]="{ 'is-invalid': requestForm.get('query')?.errors?.['required'] && requestForm.get('query')?.touched}"
+          placeholder="Ingrese el query" [defaultValue]="null"></textarea>
+        <div *ngIf="requestForm.get('query')?.errors?.['required']" class="invalid-feedback">Debe ingresar una consulta
+          SQL.</div>
+      </div>
+    </div>
+    <div class="form-group row d-flex align-items-end justify-content-center">
+      <div class="col-md-3 m-1">
+        <label for="queryRecordsToAffect">Numero de registros a afectar</label>
+        <input class="form-control" type="number" id="queryRecordsToAffect" formControlName="number_of_records"
+          readonly="true" [ngModel]="records"/>
+      </div>
+      <div class="col-md-3 m-1">
+        <label for="selectDatabaseInput">Base de datos.</label>
+        <select class="form-select form-control" id="selectDatabaseInput" formControlName="database"
+          [ngClass]="{ 'is-invalid': requestForm.get('database')?.errors?.['required'] && requestForm.get('database')?.touched}">
+          <option selected hidden [value]="null">Seleccione una base de datos.</option>
+          <option *ngFor="let database of fields.database_list" [value]="database.DATABASE_NAME">
+            {{database.DATABASE_NAME}}</option>
+        </select>
+        <div *ngIf="requestForm.get('database')?.errors?.['required']  && requestForm.get('database')?.touched"
+          class="invalid-feedback">
+          <div *ngIf="requestForm.get('database')?.errors?.['required'] ">Seleccione una base de datos. </div>
+        </div>
+      </div>
+      <div class="col-md-3 m-1 d-flex justify-content-center">
+        <button class="btn btn-primary forsubmit" (click)="validateQuery()"
+          [disabled]="!requestForm.get('database')?.valid||requestForm.get('database')?.value===null||!requestForm.get('query')?.valid||requestForm.get('query')?.value===null">Validar
+          query</button>
+      </div>
+    </div>
+    <hr>
+    <div class="m-2 form-group">
+      <div class="row d-flex align-items-end">
+        <label for="descriptionInput">Descripción de la solicitud.</label>
+        <textarea id="descriptionInput" class="form-control" rows="6" maxlength="1024"
+          formControlName="description"></textarea>
+      </div>
+    </div>
+    <div class="row d-flex align-items-end m-2 form-group justify-content-center">
+      <div class="col-md-6 col-lg-4 m-1">
+        <label for="approveInput">Aprueba.</label>
+        <select class="form-select form-control" id="approveInput" formControlName="approver_email">
+          <option selected hidden value=null>Seleccione a la persona que aprueba la solicitud.</option>
+          <option *ngFor="let user of fields.approve_user_list" [value]="user.EMAIL">{{user.FULL_NAME}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="row d-flex align-items-end m-2 form-group justify-content-center">
+      <div class="col-md-5 m-2 d-flex justify-content-center justify-content-md-start">
+        <button class="btn btn-primary" (click)="cleanForm()">Limpiar formulario</button>
+      </div>
+      <div class="col-md-5 m-2 d-flex justify-content-center justify-content-md-end">
+        <button class="btn btn-primary" (click)="sendRequest()" [disabled]="!activeSendRequest">Solicitar
+          transacción</button>
+      </div>
+    </div>
+  </form>
+  <div class="m-2 col-12 d-flex justify-content-center align-items-center text-center">
+    <span>Bienvenid@ al mantenedor de precia.<br>Usuario actual: {{requester_name}}<br>{{currentTime | date:'dd-MM-yyyy
+      hh:mm:ss a'}}</span>
+  </div>
+</div>
